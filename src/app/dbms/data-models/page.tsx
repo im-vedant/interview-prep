@@ -8,9 +8,11 @@ const sections = [
   { id: "types-of-data-models", label: "Types of Data Models" },
   { id: "schema-vs-data-model", label: "Schema vs Data Model" },
   { id: "er-model", label: "ER Model" },
+  { id: "er-notation", label: "ER Notation Reference" },
   { id: "er-components", label: "ER Components" },
   { id: "participation", label: "Participation Constraints" },
   { id: "er-diagram-example", label: "ER Diagram Example" },
+  { id: "extended-er", label: "Extended ER (EER)" },
 ];
 
 /* ─── University ER Diagram ───────────────────────────────────── */
@@ -129,6 +131,84 @@ const participationNodes: Node[] = [
 
 const partialEdgeStyle = { stroke: "oklch(0.55 0.12 264)", strokeWidth: 1.5 };
 const totalEdgeStyle  = { stroke: "oklch(0.72 0.16 80)",  strokeWidth: 1.5 };
+
+/* ─── EER Specialization Diagram ─────────────────────────────── */
+const eerNodes: Node[] = [
+  {
+    id: "employee",
+    type: "entity",
+    position: { x: 160, y: 20 },
+    data: { label: "EMPLOYEE", accent: "amber", attrs: [{ name: "emp_id", pk: true }, { name: "name" }, { name: "salary" }, { name: "hire_date" }] },
+  },
+  { id: "spec", type: "specialization", position: { x: 215, y: 190 }, data: { specType: "d" } },
+  {
+    id: "manager",
+    type: "entity",
+    position: { x: 20, y: 300 },
+    data: { label: "MANAGER", accent: "sky", attrs: [{ name: "dept" }, { name: "budget" }] },
+  },
+  {
+    id: "engineer",
+    type: "entity",
+    position: { x: 360, y: 300 },
+    data: { label: "ENGINEER", accent: "sky", attrs: [{ name: "tech_stack" }, { name: "projects" }] },
+  },
+];
+
+const isaStyle = { stroke: "oklch(0.58 0.005 260)", strokeWidth: 1.5 };
+
+const eerEdges: Edge[] = [
+  { id: "emp-spec", source: "employee", target: "spec",     sourceHandle: "bottom", targetHandle: "top",   style: isaStyle },
+  { id: "spec-mgr", source: "spec",     target: "manager",  sourceHandle: "left",   targetHandle: "top",   style: isaStyle },
+  { id: "spec-eng", source: "spec",     target: "engineer", sourceHandle: "right",  targetHandle: "top",   style: isaStyle },
+];
+
+/* ─── Aggregation Diagram ─────────────────────────────────────── */
+const aggNodes: Node[] = [
+  // Dashed box wrapping the inner relationship (zIndex behind)
+  {
+    id: "aggbox",
+    type: "aggbox",
+    position: { x: 270, y: 20 },
+    zIndex: -1,
+    draggable: false,
+    style: { width: 490, height: 195 },
+    data: { label: "aggregation" },
+  },
+  // Outside: MANAGER connects via SUPERVISES to the whole box
+  {
+    id: "mgr_agg",
+    type: "entity",
+    position: { x: 20, y: 75 },
+    data: { label: "MANAGER", accent: "sky", attrs: [{ name: "emp_id", pk: true }, { name: "name" }, { name: "dept" }] },
+  },
+  { id: "supervises", type: "relationship", position: { x: 185, y: 103 }, data: { label: "SUPERVISES" } },
+  // Inside box: EMPLOYEE — WORKS ON — PROJECT
+  {
+    id: "emp_agg",
+    type: "entity",
+    position: { x: 290, y: 48 },
+    data: { label: "EMPLOYEE", accent: "amber", attrs: [{ name: "emp_id", pk: true }, { name: "name" }] },
+  },
+  { id: "works_on", type: "relationship", position: { x: 480, y: 88 }, data: { label: "WORKS ON" } },
+  {
+    id: "proj_agg",
+    type: "entity",
+    position: { x: 610, y: 48 },
+    data: { label: "PROJECT", attrs: [{ name: "proj_id", pk: true }, { name: "title" }] },
+  },
+];
+
+const aggLineStyle = { stroke: "oklch(0.55 0.12 264)", strokeWidth: 1.5 };
+
+const aggEdges: Edge[] = [
+  // Inside the box
+  { id: "emp-works",   source: "emp_agg",   target: "works_on",  style: aggLineStyle },
+  { id: "works-proj",  source: "works_on",  target: "proj_agg",  style: aggLineStyle },
+  // MANAGER supervises the aggregated unit (connects to the box)
+  { id: "mgr-sup",     source: "mgr_agg",   target: "supervises", style: aggLineStyle },
+  { id: "sup-aggbox",  source: "supervises", target: "aggbox", targetHandle: "left", style: aggLineStyle },
+];
 
 const participationEdges: Edge[] = [
   {
@@ -411,6 +491,173 @@ export default function DataModels() {
                   </div>
                   <p className="text-xs text-muted-foreground mb-1">An association between two or more entities.</p>
                   <p className="text-xs text-foreground/50 italic">Patient BOOKS Appointment</p>
+                </div>
+
+              </div>
+            </section>
+
+            {/* ER Notation Reference */}
+            <section id="er-notation">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                ER Diagram — Notation Reference
+              </h2>
+              <p className="mb-6 text-foreground/80 text-sm">
+                Every element in an ER diagram has a standard shape. This is the complete cheat sheet.
+              </p>
+
+              <div className="space-y-6">
+
+                {/* Entities */}
+                <div>
+                  <span className="inline-block text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-0.5 mb-3">Entities</span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <rect x="8" y="10" width="144" height="44" rx="3" fill="oklch(0.18 0.015 80)" stroke="oklch(0.65 0.15 80)" strokeWidth="1.5"/>
+                        <text x="80" y="37" textAnchor="middle" fill="oklch(0.85 0.1 80)" fontSize="12" fontWeight="600">STUDENT</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-amber-400 text-center">Strong Entity</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Independent. Has its own primary key. Drawn as a plain rectangle.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <rect x="8" y="10" width="144" height="44" rx="3" fill="oklch(0.18 0.015 80)" stroke="oklch(0.65 0.15 80)" strokeWidth="1.5"/>
+                        <rect x="15" y="17" width="130" height="30" rx="2" fill="none" stroke="oklch(0.65 0.15 80)" strokeWidth="1"/>
+                        <text x="80" y="36" textAnchor="middle" fill="oklch(0.85 0.1 80)" fontSize="11" fontWeight="600">ENROLLMENT</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-amber-400 text-center">Weak Entity</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">No PK of its own. Depends on parent. Drawn as a double rectangle.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Relationships */}
+                <div>
+                  <span className="inline-block text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded px-2 py-0.5 mb-3">Relationships</span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <polygon points="80,4 156,32 80,60 4,32" fill="oklch(0.18 0.025 160)" stroke="oklch(0.55 0.15 160)" strokeWidth="1.5"/>
+                        <text x="80" y="37" textAnchor="middle" fill="oklch(0.78 0.1 160)" fontSize="11" fontWeight="600">ENROLLS</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-emerald-400 text-center">Relationship</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Association between two entities. Drawn as a diamond.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <polygon points="80,4 156,32 80,60 4,32" fill="oklch(0.18 0.025 160)" stroke="oklch(0.55 0.15 160)" strokeWidth="1.5"/>
+                        <polygon points="80,13 144,32 80,51 16,32" fill="none" stroke="oklch(0.55 0.15 160)" strokeWidth="1"/>
+                        <text x="80" y="37" textAnchor="middle" fill="oklch(0.78 0.1 160)" fontSize="10" fontWeight="600">BELONGS TO</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-emerald-400 text-center">Identifying Relationship</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Links a weak entity to its parent. Drawn as a double diamond.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Attributes */}
+                <div>
+                  <span className="inline-block text-xs font-semibold text-sky-400 bg-sky-500/10 border border-sky-500/20 rounded px-2 py-0.5 mb-3">Attributes</span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <ellipse cx="80" cy="32" rx="72" ry="26" fill="oklch(0.18 0.015 210)" stroke="oklch(0.55 0.14 210)" strokeWidth="1.5"/>
+                        <text x="80" y="37" textAnchor="middle" fill="oklch(0.78 0.1 210)" fontSize="12" fontWeight="500">name</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-sky-400 text-center">Simple Attribute</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">A basic single-valued property. Plain ellipse.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <ellipse cx="80" cy="32" rx="72" ry="26" fill="oklch(0.18 0.015 210)" stroke="oklch(0.55 0.14 210)" strokeWidth="1.5"/>
+                        <text x="80" y="37" textAnchor="middle" fill="oklch(0.78 0.1 210)" fontSize="12" fontWeight="600" textDecoration="underline">student_id</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-sky-400 text-center">Key Attribute</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Uniquely identifies the entity. Ellipse with underlined text.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <ellipse cx="80" cy="32" rx="72" ry="26" fill="oklch(0.18 0.015 210)" stroke="oklch(0.55 0.14 210)" strokeWidth="1.5" strokeDasharray="5 3"/>
+                        <text x="80" y="37" textAnchor="middle" fill="oklch(0.78 0.1 210)" fontSize="12" fontWeight="500">age</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-sky-400 text-center">Derived Attribute</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Computed from another attribute. Dashed ellipse. e.g. age from dob.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <ellipse cx="80" cy="32" rx="72" ry="26" fill="oklch(0.18 0.015 210)" stroke="oklch(0.55 0.14 210)" strokeWidth="1.5"/>
+                        <ellipse cx="80" cy="32" rx="60" ry="18" fill="none" stroke="oklch(0.55 0.14 210)" strokeWidth="1"/>
+                        <text x="80" y="37" textAnchor="middle" fill="oklch(0.78 0.1 210)" fontSize="11" fontWeight="500">phone_nos</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-sky-400 text-center">Multi-valued Attribute</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Can hold multiple values. Double ellipse. e.g. multiple phone numbers.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 92" className="w-full max-w-[160px]">
+                        {/* Parent ellipse */}
+                        <ellipse cx="80" cy="20" rx="64" ry="17" fill="oklch(0.18 0.015 210)" stroke="oklch(0.55 0.14 210)" strokeWidth="1.5"/>
+                        <text x="80" y="25" textAnchor="middle" fill="oklch(0.78 0.1 210)" fontSize="11" fontWeight="500">full_name</text>
+                        {/* Connecting lines from bottom of parent to top of children */}
+                        <line x1="80" y1="37" x2="28" y2="62" stroke="oklch(0.45 0.1 210)" strokeWidth="1.2"/>
+                        <line x1="80" y1="37" x2="80" y2="62" stroke="oklch(0.45 0.1 210)" strokeWidth="1.2"/>
+                        <line x1="80" y1="37" x2="132" y2="62" stroke="oklch(0.45 0.1 210)" strokeWidth="1.2"/>
+                        {/* Child ellipses */}
+                        <ellipse cx="28" cy="75" rx="26" ry="13" fill="oklch(0.18 0.015 210)" stroke="oklch(0.45 0.1 210)" strokeWidth="1.2"/>
+                        <ellipse cx="80" cy="75" rx="26" ry="13" fill="oklch(0.18 0.015 210)" stroke="oklch(0.45 0.1 210)" strokeWidth="1.2"/>
+                        <ellipse cx="132" cy="75" rx="26" ry="13" fill="oklch(0.18 0.015 210)" stroke="oklch(0.45 0.1 210)" strokeWidth="1.2"/>
+                        <text x="28"  y="79" textAnchor="middle" fill="oklch(0.68 0.08 210)" fontSize="9">first</text>
+                        <text x="80"  y="79" textAnchor="middle" fill="oklch(0.68 0.08 210)" fontSize="9">middle</text>
+                        <text x="132" y="79" textAnchor="middle" fill="oklch(0.68 0.08 210)" fontSize="9">last</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-sky-400 text-center">Composite Attribute</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Can be split into sub-parts. Parent ellipse branches into child ellipses.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Participation Lines */}
+                <div>
+                  <span className="inline-block text-xs font-semibold text-violet-400 bg-violet-500/10 border border-violet-500/20 rounded px-2 py-0.5 mb-3">Participation Lines</span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <line x1="10" y1="32" x2="150" y2="32" stroke="oklch(0.55 0.12 264)" strokeWidth="3"/>
+                      </svg>
+                      <p className="font-semibold text-sm text-violet-400 text-center">Partial Participation</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Entity may or may not participate. Single line.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <line x1="10" y1="26" x2="150" y2="26" stroke="oklch(0.70 0.15 80)" strokeWidth="3"/>
+                        <line x1="10" y1="38" x2="150" y2="38" stroke="oklch(0.70 0.15 80)" strokeWidth="3"/>
+                      </svg>
+                      <p className="font-semibold text-sm text-violet-400 text-center">Total Participation</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4">Every entity must participate. Double line.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* EER */}
+                <div>
+                  <span className="inline-block text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-0.5 mb-3">Extended ER</span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <circle cx="80" cy="32" r="26" fill="oklch(0.18 0.02 80)" stroke="oklch(0.65 0.15 80)" strokeWidth="1.5"/>
+                        <text x="80" y="39" textAnchor="middle" fill="oklch(0.82 0.14 80)" fontSize="16" fontWeight="700" fontStyle="italic">d</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-amber-400 text-center">Specialization (Disjoint)</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4"><span className="text-amber-400 font-mono">d</span> = entity can be in only one subclass.</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4 bg-muted/20 flex flex-col items-center gap-2">
+                      <svg viewBox="0 0 160 64" className="w-full max-w-[160px]">
+                        <circle cx="80" cy="32" r="26" fill="oklch(0.18 0.02 80)" stroke="oklch(0.65 0.15 80)" strokeWidth="1.5"/>
+                        <text x="80" y="39" textAnchor="middle" fill="oklch(0.82 0.14 80)" fontSize="16" fontWeight="700" fontStyle="italic">o</text>
+                      </svg>
+                      <p className="font-semibold text-sm text-amber-400 text-center">Specialization (Overlapping)</p>
+                      <p className="text-xs text-muted-foreground text-center leading-4"><span className="text-amber-400 font-mono">o</span> = entity can be in multiple subclasses.</p>
+                    </div>
+                  </div>
                 </div>
 
               </div>
@@ -708,6 +955,198 @@ export default function DataModels() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </section>
+
+            {/* Extended ER */}
+            <section id="extended-er">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                Extended ER (EER)
+              </h2>
+              <p className="mb-6 text-foreground/80">
+                Basic ER handles most scenarios but falls short when modelling real-world hierarchies —
+                like different types of employees or vehicles. <strong>Extended ER</strong>{" "}adds three
+                concepts on top: specialization, generalization, and aggregation.
+              </p>
+
+              <div className="space-y-8">
+
+                {/* Specialization vs Generalization */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="border border-amber-500/20 rounded-lg p-5 space-y-3">
+                    <p className="font-semibold text-amber-400">Specialization</p>
+                    <p className="text-foreground/80 text-xs leading-5">
+                      <strong>Top-down.</strong>{" "}Start with a general entity and break it into more specific subtypes.
+                      Each subtype inherits all attributes of the parent and adds its own.
+                    </p>
+                    <div className="bg-muted/50 border border-border rounded-md px-3 py-2 text-xs text-foreground/60">
+                      EMPLOYEE → MANAGER, ENGINEER, SECRETARY
+                      <br />Start broad, go specific.
+                    </div>
+                  </div>
+                  <div className="border border-sky-500/20 rounded-lg p-5 space-y-3">
+                    <p className="font-semibold text-sky-400">Generalization</p>
+                    <p className="text-foreground/80 text-xs leading-5">
+                      <strong>Bottom-up.</strong>{" "}Start with specific entities that share common attributes and
+                      merge them into a single general superclass.
+                    </p>
+                    <div className="bg-muted/50 border border-border rounded-md px-3 py-2 text-xs text-foreground/60">
+                      CAR, TRUCK, BIKE → VEHICLE
+                      <br />Start specific, go broad.
+                    </div>
+                  </div>
+                </div>
+
+                {/* IS-A Diagram */}
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                    Specialization Diagram — Employee
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    The circle shows the constraint type — <span className="text-amber-400 font-medium">d</span> = disjoint (an employee can be either a Manager OR an Engineer, not both).
+                    MANAGER and ENGINEER inherit <span className="text-amber-300 font-mono text-[11px]">emp_id, name, salary, hire_date</span> from EMPLOYEE and add their own attributes.
+                  </p>
+                  <ERDiagram initialNodes={eerNodes} initialEdges={eerEdges} height={420} />
+                </div>
+
+                {/* Constraints */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-foreground">Specialization Constraints</p>
+                  <p className="text-xs text-muted-foreground mb-2">Two independent constraints that apply to every specialization:</p>
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    {[
+                      {
+                        title: "Disjoint  (d)",
+                        color: "text-amber-400 border-amber-500/20",
+                        desc: "An entity can belong to only ONE subclass at a time.",
+                        eg: "An employee is either a Manager OR an Engineer — never both.",
+                      },
+                      {
+                        title: "Overlapping  (o)",
+                        color: "text-violet-400 border-violet-500/20",
+                        desc: "An entity can belong to MULTIPLE subclasses simultaneously.",
+                        eg: "A person can be both an Employee AND a Student at the same time.",
+                      },
+                      {
+                        title: "Total",
+                        color: "text-emerald-400 border-emerald-500/20",
+                        desc: "Every entity in the superclass MUST belong to at least one subclass.",
+                        eg: "Every vehicle must be a Car, Truck, or Bike — nothing else exists.",
+                      },
+                      {
+                        title: "Partial",
+                        color: "text-sky-400 border-sky-500/20",
+                        desc: "An entity in the superclass MAY NOT belong to any subclass.",
+                        eg: "An employee can just be a generic employee — not necessarily a Manager or Engineer.",
+                      },
+                    ].map(({ title, color, desc, eg }) => (
+                      <div key={title} className={`border ${color.split(" ")[1]} rounded-lg p-3 bg-muted/30 space-y-1.5`}>
+                        <p className={`font-semibold ${color.split(" ")[0]}`}>{title}</p>
+                        <p className="text-muted-foreground leading-5">{desc}</p>
+                        <p className="text-foreground/50 italic">{eg}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Inheritance */}
+                <div className="border border-border rounded-lg overflow-hidden text-sm">
+                  <div className="px-5 py-3 bg-muted/40 border-b border-border">
+                    <p className="font-semibold text-foreground">Inheritance</p>
+                  </div>
+                  <div className="px-5 py-4 space-y-3 text-xs">
+                    <p className="text-foreground/80 leading-5">
+                      Subclasses automatically inherit all attributes and relationships of their superclass.
+                      You only define what is <em>new or different</em> in the subclass.
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { entity: "EMPLOYEE", attrs: ["emp_id PK", "name", "salary", "hire_date"], color: "text-amber-400 border-amber-500/20 bg-amber-500/5" },
+                        { entity: "MANAGER", attrs: ["↑ inherits all", "dept", "budget"], color: "text-sky-400 border-sky-500/20 bg-sky-500/5" },
+                        { entity: "ENGINEER", attrs: ["↑ inherits all", "tech_stack", "projects"], color: "text-sky-400 border-sky-500/20 bg-sky-500/5" },
+                      ].map(({ entity, attrs, color }) => (
+                        <div key={entity} className={`border ${color.split(" ")[1]} ${color.split(" ")[2]} rounded-lg p-3`}>
+                          <p className={`font-semibold ${color.split(" ")[0]} mb-2`}>{entity}</p>
+                          {attrs.map((a) => (
+                            <p key={a} className={`font-mono text-[10px] ${a.startsWith("↑") ? "text-muted-foreground/50 italic" : "text-foreground/70"}`}>{a}</p>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Aggregation */}
+                <div className="border border-border rounded-lg overflow-hidden text-sm">
+                  <div className="px-5 py-3 bg-emerald-500/10 border-b border-border">
+                    <p className="font-semibold text-emerald-400">Aggregation</p>
+                  </div>
+                  <div className="px-5 py-4 space-y-4">
+
+                    {/* The problem */}
+                    <div className="space-y-2 text-xs">
+                      <p className="text-foreground/80 leading-5">
+                        Basic ER lets a relationship connect two <em>entities</em>. But what if you need a
+                        relationship to connect an entity to another <em>relationship</em>? Basic ER can&apos;t do that.
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-muted/40 border border-border rounded-lg p-3 space-y-1.5">
+                          <p className="text-muted-foreground font-medium">Basic ER — works fine</p>
+                          <p className="font-mono text-[11px] text-foreground/70">EMPLOYEE ── WORKS ON ── PROJECT</p>
+                          <p className="text-muted-foreground/70 leading-4">Alice works on the App Redesign project. Simple.</p>
+                        </div>
+                        <div className="bg-muted/40 border border-red-500/20 rounded-lg p-3 space-y-1.5">
+                          <p className="text-red-400 font-medium">New requirement — breaks basic ER</p>
+                          <p className="font-mono text-[11px] text-foreground/70">A manager supervises Alice&apos;s work on App Redesign specifically.</p>
+                          <p className="text-muted-foreground/70 leading-4">Not just Alice. Not just App Redesign. That specific pairing.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* The solution */}
+                    <div className="space-y-2 text-xs">
+                      <p className="text-foreground/80 leading-5">
+                        Aggregation solves this by drawing a <strong>dashed box</strong> around the inner
+                        relationship — treating the entire EMPLOYEE–WORKS ON–PROJECT chunk as one unit.
+                        Now MANAGER can have a relationship (SUPERVISES) with that whole unit.
+                      </p>
+                      <p className="text-muted-foreground">
+                        The <span className="text-violet-400">dashed box</span> below is the aggregation.
+                        SUPERVISES points into it as a whole — not at any single entity inside.
+                      </p>
+                    </div>
+
+                    <ERDiagram initialNodes={aggNodes} initialEdges={aggEdges} height={280} />
+
+                    {/* Real data example */}
+                    <div className="bg-muted/40 border border-border rounded-lg p-4 space-y-3 text-xs">
+                      <p className="text-muted-foreground font-medium">What the data actually looks like</p>
+                      <div className="grid grid-cols-2 gap-4 font-mono text-[11px]">
+                        <div className="space-y-1">
+                          <p className="text-muted-foreground uppercase tracking-wide text-[10px] mb-2">WORKS_ON table</p>
+                          <p className="text-foreground/60">emp_id  │ proj_id</p>
+                          <p className="text-foreground/70">Alice   │ App Redesign</p>
+                          <p className="text-foreground/70">Alice   │ Backend API</p>
+                          <p className="text-foreground/70">Bob     │ App Redesign</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-muted-foreground uppercase tracking-wide text-[10px] mb-2">SUPERVISES table</p>
+                          <p className="text-foreground/60">manager │ emp_id │ proj_id</p>
+                          <p className="text-emerald-400/80">Carol   │ Alice  │ App Redesign</p>
+                          <p className="text-emerald-400/80">Carol   │ Bob    │ App Redesign</p>
+                          <p className="text-muted-foreground/50 text-[10px] mt-1">↑ points at a row in WORKS_ON, not just an employee or project</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-muted/50 border-l-4 border-emerald-500/50 rounded-md px-4 py-2 text-xs text-foreground/70">
+                      <span className="text-emerald-400 font-semibold">One line: </span>
+                      Aggregation is when a relationship becomes so important that other things need to relate to it —
+                      so you box it up and treat it like an entity.
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </section>
 

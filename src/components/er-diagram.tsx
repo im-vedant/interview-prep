@@ -19,21 +19,24 @@ import {
 import "@xyflow/react/dist/style.css";
 
 /* ─── Entity Node ─────────────────────────────────────────────── */
+const accentMap = {
+  violet: { border: "border-violet-500/40", header: "bg-violet-500/20 border-violet-500/30", text: "text-violet-300", badge: "text-violet-400/60 border-violet-400/25", handle: "!bg-violet-400 !border-violet-600", outline: "oklch(0.50 0.12 264 / 0.45)" },
+  amber:  { border: "border-amber-500/40",  header: "bg-amber-500/20 border-amber-500/30",   text: "text-amber-300",  badge: "text-amber-400/60 border-amber-400/25",   handle: "!bg-amber-400 !border-amber-600",   outline: "oklch(0.50 0.12 80 / 0.45)"   },
+  sky:    { border: "border-sky-500/40",    header: "bg-sky-500/20 border-sky-500/30",       text: "text-sky-300",    badge: "text-sky-400/60 border-sky-400/25",       handle: "!bg-sky-400 !border-sky-600",       outline: "oklch(0.50 0.12 210 / 0.45)"  },
+};
+
 function EntityNode({ data }: NodeProps) {
-  const d = data as { label: string; attrs: { name: string; pk?: boolean; fk?: boolean }[]; weak?: boolean };
+  const d = data as { label: string; attrs: { name: string; pk?: boolean; fk?: boolean }[]; weak?: boolean; accent?: "violet" | "amber" | "sky" };
+  const c = accentMap[d.accent ?? "violet"];
   return (
     <div
-      className="rounded-xl bg-[oklch(0.20_0.006_260)] shadow-lg shadow-violet-900/20 min-w-[150px] overflow-hidden border border-violet-500/40"
-      style={d.weak ? { outline: "2px solid oklch(0.50 0.12 264 / 0.45)", outlineOffset: "3px" } : undefined}
+      className={`rounded-xl bg-[oklch(0.20_0.006_260)] shadow-lg min-w-[150px] overflow-hidden border ${c.border}`}
+      style={d.weak ? { outline: `2px solid ${c.outline}`, outlineOffset: "3px" } : undefined}
     >
-      <div className="bg-violet-500/20 px-4 py-2.5 border-b border-violet-500/30">
+      <div className={`${c.header} px-4 py-2.5 border-b`}>
         <div className="flex items-center gap-2">
-          <p className="text-violet-300 font-semibold text-sm tracking-wide">{d.label}</p>
-          {d.weak && (
-            <span className="text-[9px] font-medium text-violet-400/60 border border-violet-400/25 rounded px-1 py-0.5 leading-none">
-              weak
-            </span>
-          )}
+          <p className={`${c.text} font-semibold text-sm tracking-wide`}>{d.label}</p>
+          {d.weak && <span className={`text-[9px] font-medium ${c.badge} border rounded px-1 py-0.5 leading-none`}>weak</span>}
         </div>
       </div>
       <div className="px-4 py-2 space-y-1.5">
@@ -46,10 +49,27 @@ function EntityNode({ data }: NodeProps) {
           </div>
         ))}
       </div>
-      <Handle type="source" position={Position.Right} className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5" />
-      <Handle type="target" position={Position.Left} className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5" />
-      <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5" />
-      <Handle type="target" position={Position.Top} id="top" className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5" />
+      <Handle type="source" position={Position.Right} className={`${c.handle} !w-2.5 !h-2.5`} />
+      <Handle type="target" position={Position.Left} className={`${c.handle} !w-2.5 !h-2.5`} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className={`${c.handle} !w-2.5 !h-2.5`} />
+      <Handle type="target" position={Position.Top} id="top" className={`${c.handle} !w-2.5 !h-2.5`} />
+    </div>
+  );
+}
+
+/* ─── Specialization Node (circle with d / o) ─────────────────── */
+function SpecializationNode({ data }: NodeProps) {
+  const d = data as { specType: "d" | "o" };
+  return (
+    <div className="relative flex items-center justify-center w-10 h-10">
+      <svg viewBox="0 0 40 40" className="absolute inset-0 w-full h-full">
+        <circle cx="20" cy="20" r="18" fill="oklch(0.18 0.02 80)" stroke="oklch(0.65 0.15 80)" strokeWidth="1.5" />
+      </svg>
+      <span className="relative z-10 text-amber-300 text-sm font-bold italic">{d.specType}</span>
+      <Handle type="target" position={Position.Top} id="top" className="!bg-amber-400 !border-amber-600 !w-2 !h-2" />
+      <Handle type="source" position={Position.Left} id="left" className="!bg-amber-400 !border-amber-600 !w-2 !h-2" />
+      <Handle type="source" position={Position.Right} id="right" className="!bg-amber-400 !border-amber-600 !w-2 !h-2" />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-amber-400 !border-amber-600 !w-2 !h-2" />
     </div>
   );
 }
@@ -98,7 +118,23 @@ function DoubleEdge({ sourceX, sourceY, targetX, targetY, sourcePosition, target
   );
 }
 
-const nodeTypes = { entity: EntityNode, relationship: RelationshipNode };
+/* ─── Aggregation Box Node ────────────────────────────────────── */
+function AggregationBoxNode({ data }: NodeProps) {
+  const d = data as { label: string };
+  return (
+    <div className="w-full h-full rounded-xl border-2 border-dashed border-violet-400/30 bg-violet-500/5 relative pointer-events-none">
+      <span className="absolute bottom-2 right-3 text-[10px] text-violet-400/40 font-medium uppercase tracking-widest select-none">
+        {d.label}
+      </span>
+      <Handle type="target" position={Position.Left} id="left" className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5 pointer-events-auto" />
+      <Handle type="source" position={Position.Right} id="right" className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5 pointer-events-auto" />
+      <Handle type="target" position={Position.Top} id="top" className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5 pointer-events-auto" />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-violet-400 !border-violet-600 !w-2.5 !h-2.5 pointer-events-auto" />
+    </div>
+  );
+}
+
+const nodeTypes = { entity: EntityNode, relationship: RelationshipNode, specialization: SpecializationNode, aggbox: AggregationBoxNode };
 const edgeTypes = { double: DoubleEdge };
 
 /* ─── ERDiagram Component ─────────────────────────────────────── */
