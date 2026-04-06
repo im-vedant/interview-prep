@@ -11,6 +11,11 @@ const articles = [
     title: "Data Models & ER Model",
     desc: "What data models are, types — hierarchical, network, relational, ER, object-oriented, document, key-value.",
   },
+  {
+    slug: "/dbms/er-to-relational",
+    title: "ER Diagrams to Relational Model",
+    desc: "How to design an ER diagram step by step, and map it to relational tables — entities, relationships, weak entities, M:N, specialization.",
+  },
 ];
 
 export default function DBMSIndex() {

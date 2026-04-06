@@ -5,7 +5,7 @@ const topics = [
     slug: "/dbms",
     title: "DBMS",
     description: "Database fundamentals — data, storage models, normalization, transactions, and more.",
-    articles: 2,
+    articles: 3,
   },
 ];
 

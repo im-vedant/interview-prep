@@ -7,9 +7,11 @@ const sections = [
   { id: "what-is-a-data-model", label: "What is a Data Model?" },
   { id: "types-of-data-models", label: "Types of Data Models" },
   { id: "schema-vs-data-model", label: "Schema vs Data Model" },
+  { id: "rdbms", label: "RDBMS" },
   { id: "er-model", label: "ER Model" },
   { id: "er-notation", label: "ER Notation Reference" },
   { id: "er-components", label: "ER Components" },
+  { id: "relationship-types", label: "Relationship Types" },
   { id: "participation", label: "Participation Constraints" },
   { id: "er-diagram-example", label: "ER Diagram Example" },
   { id: "extended-er", label: "Extended ER (EER)" },
@@ -429,6 +431,66 @@ export default function DataModels() {
 
               <div className="bg-muted/50 border-l-4 border-emerald-500/50 rounded-md px-5 py-4 text-foreground/80">
                 <strong>One line:</strong>{" "}the data model is the <em>theory</em>, the schema is the <em>application of that theory to your specific database</em>.
+              </div>
+            </section>
+
+            {/* RDBMS */}
+            <section id="rdbms">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                RDBMS
+              </h2>
+              <p className="mb-4">
+                A <strong>Relational Database Management System (RDBMS)</strong>{" "}is a DBMS that implements
+                the <em>relational data model</em> — it stores data in <strong>tables (relations)</strong>,
+                where each row is a tuple and each column is an attribute. Tables are linked to each other
+                through <strong>foreign keys</strong>.
+              </p>
+              <p className="mb-6 text-foreground/80">
+                SQL (Structured Query Language) is the standard language used to interact with an RDBMS —
+                to create tables, insert rows, query data, and enforce constraints.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                <div className="border border-border rounded-lg p-5 space-y-3">
+                  <p className="font-semibold text-violet-400 text-sm">Core Properties</p>
+                  <ul className="space-y-2 text-xs text-foreground/80">
+                    {[
+                      { label: "Tables", desc: "Data organised in rows and columns. Each table represents one entity type." },
+                      { label: "Primary Key", desc: "Uniquely identifies each row. Cannot be NULL or duplicate." },
+                      { label: "Foreign Key", desc: "A column that references the primary key of another table — enforces referential integrity." },
+                      { label: "SQL", desc: "Standardised language for querying and managing relational data." },
+                      { label: "ACID", desc: "Transactions are Atomic, Consistent, Isolated, and Durable." },
+                    ].map(({ label, desc }) => (
+                      <li key={label} className="flex gap-2">
+                        <span className="flex-shrink-0 text-violet-400 font-semibold">{label}:</span>
+                        <span className="text-muted-foreground">{desc}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="border border-border rounded-lg p-5 space-y-3">
+                  <p className="font-semibold text-sky-400 text-sm">Popular RDBMS Systems</p>
+                  <div className="space-y-2 text-xs">
+                    {[
+                      { name: "PostgreSQL", note: "Open-source, feature-rich, widely used in production." },
+                      { name: "MySQL", note: "Open-source, fast, popular in web stacks (LAMP/LEMP)." },
+                      { name: "SQLite", note: "Serverless, file-based, embedded in mobile & desktop apps." },
+                      { name: "Oracle DB", note: "Enterprise-grade, feature-heavy, used in large organisations." },
+                      { name: "SQL Server", note: "Microsoft&apos;s RDBMS, integrates tightly with the .NET ecosystem." },
+                    ].map(({ name, note }) => (
+                      <div key={name} className="flex items-start gap-2 border border-border rounded-lg px-3 py-2 bg-muted/30">
+                        <span className="text-sky-400 font-semibold flex-shrink-0">{name}</span>
+                        <span className="text-muted-foreground">{note}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-muted/50 border-l-4 border-emerald-500/50 rounded-md px-5 py-4 text-sm text-foreground/80">
+                <strong>RDBMS vs DBMS:</strong>{" "}Every RDBMS is a DBMS, but not every DBMS is an RDBMS.
+                MongoDB (document store) and Redis (key-value store) are DBMSes but not RDBMSes —
+                they do not use the relational model.
               </div>
             </section>
 
@@ -888,6 +950,172 @@ export default function DataModels() {
                   </div>
                 </div>
 
+              </div>
+            </section>
+
+            {/* Relationship Types */}
+            <section id="relationship-types">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                Relationship Types — by Degree
+              </h2>
+              <p className="mb-6 text-foreground/80">
+                The <strong>degree</strong> of a relationship is the number of entity sets that participate in it.
+                Most relationships are binary, but ER supports unary and ternary too.
+              </p>
+
+              <div className="space-y-4 text-sm">
+
+                {/* Binary */}
+                <div className="border border-border rounded-lg overflow-hidden">
+                  <div className="px-5 py-3 bg-violet-500/10 border-b border-border flex items-center gap-3">
+                    <span className="flex-shrink-0 font-mono text-xs font-bold bg-violet-500/20 text-violet-400 border border-violet-500/30 rounded px-2 py-0.5">Degree 2</span>
+                    <p className="font-semibold text-violet-400 text-sm">Binary Relationship</p>
+                    <span className="ml-auto text-xs text-muted-foreground">Most common</span>
+                  </div>
+                  <div className="px-5 py-4 space-y-3">
+                    <p className="text-foreground/80 text-xs leading-5">
+                      Two entity sets participate. This covers the standard 1:1, 1:N, and M:N cardinalities
+                      you see in almost every ER diagram.
+                    </p>
+                    <div className="flex justify-center py-2">
+                      <svg viewBox="0 0 280 80" className="w-full max-w-sm">
+                        {/* Entity A */}
+                        <rect x="4" y="25" width="76" height="30" rx="3" fill="oklch(0.18 0.015 264)" stroke="oklch(0.55 0.15 264)" strokeWidth="1.5"/>
+                        <text x="42" y="45" textAnchor="middle" fill="oklch(0.78 0.1 264)" fontSize="10" fontWeight="600">STUDENT</text>
+                        {/* Line A to diamond */}
+                        <line x1="80" y1="40" x2="100" y2="40" stroke="oklch(0.55 0.12 264)" strokeWidth="1.5"/>
+                        {/* Diamond */}
+                        <polygon points="140,20 180,40 140,60 100,40" fill="oklch(0.18 0.025 160)" stroke="oklch(0.55 0.15 160)" strokeWidth="1.5"/>
+                        <text x="140" y="45" textAnchor="middle" fill="oklch(0.78 0.1 160)" fontSize="9" fontWeight="600">ENROLLS</text>
+                        {/* Line diamond to B */}
+                        <line x1="180" y1="40" x2="200" y2="40" stroke="oklch(0.55 0.12 264)" strokeWidth="1.5"/>
+                        {/* Entity B */}
+                        <rect x="200" y="25" width="76" height="30" rx="3" fill="oklch(0.18 0.015 264)" stroke="oklch(0.55 0.15 264)" strokeWidth="1.5"/>
+                        <text x="238" y="45" textAnchor="middle" fill="oklch(0.78 0.1 264)" fontSize="10" fontWeight="600">COURSE</text>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center italic">Student ENROLLS in Course — two entities, one relationship</p>
+                  </div>
+                </div>
+
+                {/* Unary */}
+                <div className="border border-border rounded-lg overflow-hidden">
+                  <div className="px-5 py-3 bg-sky-500/10 border-b border-border flex items-center gap-3">
+                    <span className="flex-shrink-0 font-mono text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded px-2 py-0.5">Degree 1</span>
+                    <p className="font-semibold text-sky-400 text-sm">Unary (Recursive) Relationship</p>
+                  </div>
+                  <div className="px-5 py-4 space-y-3">
+                    <p className="text-foreground/80 text-xs leading-5">
+                      Only one entity set participates — the entity relates to itself.
+                      Used to model hierarchies or self-referencing data within the same table.
+                    </p>
+                    <div className="flex justify-center py-2">
+                      <svg viewBox="0 0 270 115" className="w-full max-w-sm">
+                        {/* Entity EMPLOYEE: right edge=110, center=(60,33), bottom-center=(60,48) */}
+                        <rect x="10" y="18" width="100" height="30" rx="3" fill="oklch(0.18 0.015 264)" stroke="oklch(0.55 0.15 264)" strokeWidth="1.5"/>
+                        <text x="60" y="38" textAnchor="middle" fill="oklch(0.78 0.1 264)" fontSize="10" fontWeight="600">EMPLOYEE</text>
+                        {/* Supervisor — straight horizontal line */}
+                        <line x1="110" y1="33" x2="178" y2="33" stroke="oklch(0.55 0.12 264)" strokeWidth="1.5"/>
+                        {/* Subordinate — U-shaped cubic bezier going below */}
+                        <path d="M 60 48 C 60 102 210 102 210 54" fill="none" stroke="oklch(0.55 0.12 264)" strokeWidth="1.5"/>
+                        {/* Diamond MANAGES center=(210,33) */}
+                        <polygon points="210,12 242,33 210,54 178,33" fill="oklch(0.18 0.025 160)" stroke="oklch(0.55 0.15 160)" strokeWidth="1.5"/>
+                        <text x="210" y="38" textAnchor="middle" fill="oklch(0.78 0.1 160)" fontSize="9" fontWeight="600">MANAGES</text>
+                        {/* Role labels */}
+                        <text x="144" y="26" textAnchor="middle" fill="oklch(0.58 0.08 264)" fontSize="8" fontStyle="italic">supervisor</text>
+                        <text x="135" y="108" textAnchor="middle" fill="oklch(0.58 0.08 264)" fontSize="8" fontStyle="italic">subordinate</text>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center italic">EMPLOYEE MANAGES EMPLOYEE — same entity on both sides</p>
+                    <div className="bg-muted/40 border border-border rounded-lg p-3 text-xs">
+                      <p className="text-sky-400 font-medium mb-1.5">Other examples</p>
+                      <ul className="space-y-1 text-muted-foreground list-disc list-inside">
+                        <li>PERSON IS_MARRIED_TO PERSON — 1:1 unary</li>
+                        <li>CATEGORY CONTAINS CATEGORY — 1:N (parent/child categories)</li>
+                        <li>EMPLOYEE REFERS EMPLOYEE — referral programs</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ternary */}
+                <div className="border border-border rounded-lg overflow-hidden">
+                  <div className="px-5 py-3 bg-emerald-500/10 border-b border-border flex items-center gap-3">
+                    <span className="flex-shrink-0 font-mono text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded px-2 py-0.5">Degree 3</span>
+                    <p className="font-semibold text-emerald-400 text-sm">Ternary Relationship</p>
+                  </div>
+                  <div className="px-5 py-4 space-y-3">
+                    <p className="text-foreground/80 text-xs leading-5">
+                      Three entity sets participate in a single relationship diamond. Used when an
+                      association only makes sense with all three entities together — you can&apos;t split it
+                      into two binary relationships without losing information.
+                    </p>
+                    <div className="flex justify-center py-2">
+                      <svg viewBox="0 0 280 210" className="w-full max-w-sm">
+                        {/* Top entity: DOCTOR */}
+                        <rect x="85" y="5" width="110" height="30" rx="3" fill="oklch(0.18 0.015 264)" stroke="oklch(0.55 0.15 264)" strokeWidth="1.5"/>
+                        <text x="140" y="25" textAnchor="middle" fill="oklch(0.78 0.1 264)" fontSize="10" fontWeight="600">DOCTOR</text>
+                        {/* Line: Doctor → Diamond */}
+                        <line x1="140" y1="35" x2="140" y2="85" stroke="oklch(0.55 0.12 264)" strokeWidth="1.5"/>
+                        {/* Diamond PRESCRIBES center (140, 110) */}
+                        <polygon points="140,85 176,110 140,135 104,110" fill="oklch(0.18 0.025 160)" stroke="oklch(0.55 0.15 160)" strokeWidth="1.5"/>
+                        <text x="140" y="115" textAnchor="middle" fill="oklch(0.78 0.1 160)" fontSize="8.5" fontWeight="600">PRESCRIBES</text>
+                        {/* Line: Diamond left → PATIENT */}
+                        <line x1="104" y1="110" x2="45" y2="165" stroke="oklch(0.55 0.12 264)" strokeWidth="1.5"/>
+                        {/* Line: Diamond right → MEDICINE */}
+                        <line x1="176" y1="110" x2="235" y2="165" stroke="oklch(0.55 0.12 264)" strokeWidth="1.5"/>
+                        {/* Bottom-left entity: PATIENT */}
+                        <rect x="0" y="165" width="90" height="30" rx="3" fill="oklch(0.18 0.015 264)" stroke="oklch(0.55 0.15 264)" strokeWidth="1.5"/>
+                        <text x="45" y="185" textAnchor="middle" fill="oklch(0.78 0.1 264)" fontSize="10" fontWeight="600">PATIENT</text>
+                        {/* Bottom-right entity: MEDICINE */}
+                        <rect x="190" y="165" width="90" height="30" rx="3" fill="oklch(0.18 0.015 264)" stroke="oklch(0.55 0.15 264)" strokeWidth="1.5"/>
+                        <text x="235" y="185" textAnchor="middle" fill="oklch(0.78 0.1 264)" fontSize="10" fontWeight="600">MEDICINE</text>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center italic">
+                      DOCTOR PRESCRIBES MEDICINE to PATIENT — all three are needed to make sense of the relationship
+                    </p>
+                    <div className="bg-muted/40 border border-amber-500/20 rounded-lg p-3 text-xs space-y-1.5">
+                      <p className="text-amber-400 font-medium">Why not two binary relationships?</p>
+                      <p className="text-muted-foreground leading-5">
+                        &ldquo;DOCTOR PRESCRIBES MEDICINE&rdquo; and &ldquo;DOCTOR TREATS PATIENT&rdquo; are two different facts.
+                        The ternary captures a third fact: <em>which medicine was prescribed to which patient by which doctor</em> — in one atomic tuple.
+                        Split into binaries and you lose that linkage.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div className="mt-5 bg-card border border-border rounded-lg overflow-hidden text-xs">
+                <div className="px-5 py-3 bg-muted/40 border-b border-border">
+                  <p className="font-semibold text-foreground">Summary — Relationship Degree</p>
+                </div>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/20">
+                      <th className="px-4 py-2 text-left text-muted-foreground font-medium">Degree</th>
+                      <th className="px-4 py-2 text-left text-muted-foreground font-medium">Name</th>
+                      <th className="px-4 py-2 text-left text-muted-foreground font-medium">Entities involved</th>
+                      <th className="px-4 py-2 text-left text-muted-foreground font-medium">Example</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {[
+                      { deg: "1", name: "Unary", ent: "1 (self-referencing)", eg: "EMPLOYEE MANAGES EMPLOYEE" },
+                      { deg: "2", name: "Binary", ent: "2", eg: "STUDENT ENROLLS COURSE" },
+                      { deg: "3", name: "Ternary", ent: "3", eg: "DOCTOR PRESCRIBES MEDICINE to PATIENT" },
+                    ].map(({ deg, name, ent, eg }) => (
+                      <tr key={deg} className="hover:bg-muted/20">
+                        <td className="px-4 py-2.5 font-mono text-violet-400 font-bold">{deg}</td>
+                        <td className="px-4 py-2.5 text-foreground/80">{name}</td>
+                        <td className="px-4 py-2.5 text-muted-foreground">{ent}</td>
+                        <td className="px-4 py-2.5 text-muted-foreground font-mono text-[10px]">{eg}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </section>
 
