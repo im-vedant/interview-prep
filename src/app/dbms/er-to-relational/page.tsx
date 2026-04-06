@@ -20,20 +20,24 @@ const sections = [
 
 /* ─── Worked Example ER Diagram (E-commerce) ─────────────────── */
 const exNodes: Node[] = [
-  { id: "customer", type: "entity", position: { x: 20, y: 20 },
+  // Top row: left → right chain
+  { id: "customer", type: "entity", position: { x: 0, y: 20 },
     data: { label: "CUSTOMER", attrs: [{ name: "customer_id", pk: true }, { name: "name" }, { name: "email" }] } },
-  { id: "places", type: "relationship", position: { x: 210, y: 36 }, data: { label: "PLACES" } },
-  { id: "order", type: "entity", position: { x: 340, y: 20 },
+  { id: "places", type: "relationship", position: { x: 185, y: 36 }, data: { label: "PLACES" } },
+  { id: "order", type: "entity", position: { x: 312, y: 20 },
     data: { label: "ORDER", attrs: [{ name: "order_id", pk: true }, { name: "customer_id", fk: true }, { name: "date" }, { name: "status" }] } },
-  { id: "contains", type: "relationship", position: { x: 530, y: 36 }, data: { label: "CONTAINS" } },
-  { id: "order_item", type: "entity", position: { x: 660, y: 20 },
+  { id: "contains", type: "relationship", position: { x: 497, y: 36 }, data: { label: "CONTAINS" } },
+  // ORDER_ITEM center-x ≈ 709 (624 + 85)
+  { id: "order_item", type: "entity", position: { x: 624, y: 20 },
     data: { label: "ORDER ITEM", weak: true, attrs: [{ name: "order_id", fk: true }, { name: "product_id", fk: true }, { name: "qty" }, { name: "price" }] } },
 
-  { id: "includes", type: "relationship", position: { x: 700, y: 240 }, data: { label: "INCLUDES" } },
-  { id: "product", type: "entity", position: { x: 640, y: 360 },
+  // INCLUDES and PRODUCT share center-x ≈ 709 → clean vertical column
+  { id: "includes", type: "relationship", position: { x: 653, y: 235 }, data: { label: "INCLUDES" } },
+  { id: "product", type: "entity", position: { x: 624, y: 360 },
     data: { label: "PRODUCT", attrs: [{ name: "product_id", pk: true }, { name: "name" }, { name: "price" }] } },
-  { id: "belongs", type: "relationship", position: { x: 430, y: 380 }, data: { label: "BELONGS TO" } },
-  { id: "category", type: "entity", position: { x: 270, y: 360 },
+  // Bottom row continues LEFT from PRODUCT
+  { id: "belongs", type: "relationship", position: { x: 424, y: 376 }, data: { label: "BELONGS TO" } },
+  { id: "category", type: "entity", position: { x: 204, y: 360 },
     data: { label: "CATEGORY", attrs: [{ name: "cat_id", pk: true }, { name: "name" }] } },
 ];
 
@@ -44,14 +48,17 @@ const sl = { fill: "oklch(0.75 0.08 264)", fontSize: 11, fontWeight: 700 };
 const tl = { fill: "oklch(0.72 0.16 80)",  fontSize: 11, fontWeight: 700 };
 
 const exEdges: Edge[] = [
-  { id: "c-places",    source: "customer",   target: "places",     type: "default", label: "1", style: s, labelStyle: sl, labelBgStyle: lb },
-  { id: "places-o",   source: "places",     target: "order",      type: "double",  label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
-  { id: "o-contains", source: "order",      target: "contains",   type: "double",  label: "1", style: t, labelStyle: tl, labelBgStyle: lb },
-  { id: "contains-oi",source: "contains",   target: "order_item", type: "double",  label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
-  { id: "oi-includes", source: "order_item", target: "includes", sourceHandle: "bottom", type: "double", label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
-  { id: "includes-p",  source: "includes",  target: "product",  targetHandle: "top",    type: "default", label: "1", style: s, labelStyle: sl, labelBgStyle: lb },
-  { id: "p-belongs",   source: "product",   target: "belongs",    type: "double",  label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
-  { id: "belongs-cat", source: "belongs",   target: "category",   type: "default", label: "1", style: s, labelStyle: sl, labelBgStyle: lb },
+  // Top row — left→right, default right/left handles
+  { id: "c-places",    source: "customer",   target: "places",                                                          type: "default", label: "1", style: s, labelStyle: sl, labelBgStyle: lb },
+  { id: "places-o",   source: "places",     target: "order",                                                           type: "double",  label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
+  { id: "o-contains", source: "order",      target: "contains",                                                        type: "double",  label: "1", style: t, labelStyle: tl, labelBgStyle: lb },
+  { id: "contains-oi",source: "contains",   target: "order_item",                                                      type: "double",  label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
+  // Vertical chain — ORDER_ITEM bottom → INCLUDES top → PRODUCT top (straight column)
+  { id: "oi-includes", source: "order_item", target: "includes",  sourceHandle: "bottom", targetHandle: "top",         type: "double",  label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
+  { id: "includes-p",  source: "includes",  target: "product",   sourceHandle: "bottom", targetHandle: "top",         type: "default", label: "1", style: s, labelStyle: sl, labelBgStyle: lb },
+  // Bottom row — right→left using new left/rightTarget handles
+  { id: "p-belongs",   source: "product",   target: "belongs",   sourceHandle: "left",   targetHandle: "rightTarget", type: "double",  label: "N", style: t, labelStyle: tl, labelBgStyle: lb },
+  { id: "belongs-cat", source: "belongs",   target: "category",  sourceHandle: "left",   targetHandle: "rightTarget", type: "default", label: "1", style: s, labelStyle: sl, labelBgStyle: lb },
 ];
 
 /* ─── Helpers ─────────────────────────────────────────────────── */
@@ -389,7 +396,7 @@ CREATE TABLE engineer (
               {/* ER Diagram */}
               <div className="mb-2">
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Step 1 — ER Diagram</p>
-                <ERDiagram initialNodes={exNodes} initialEdges={exEdges} height={500} />
+                <ERDiagram initialNodes={exNodes} initialEdges={exEdges} height={520} />
                 <div className="mt-3 flex flex-wrap gap-3 text-xs">
                   {[
                     { color: "bg-violet-500/20 border-violet-500/40 text-violet-300", label: "Strong Entity" },

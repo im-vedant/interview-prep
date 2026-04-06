@@ -51,6 +51,8 @@ function EntityNode({ data }: NodeProps) {
       </div>
       <Handle type="source" position={Position.Right} className={`${c.handle} !w-2.5 !h-2.5`} />
       <Handle type="target" position={Position.Left} className={`${c.handle} !w-2.5 !h-2.5`} />
+      <Handle type="source" position={Position.Left} id="left" className={`${c.handle} !w-2.5 !h-2.5`} />
+      <Handle type="target" position={Position.Right} id="rightTarget" className={`${c.handle} !w-2.5 !h-2.5`} />
       <Handle type="source" position={Position.Bottom} id="bottom" className={`${c.handle} !w-2.5 !h-2.5`} />
       <Handle type="target" position={Position.Top} id="top" className={`${c.handle} !w-2.5 !h-2.5`} />
     </div>
@@ -85,6 +87,8 @@ function RelationshipNode({ data }: NodeProps) {
       <span className="relative z-10 text-emerald-300 text-xs font-semibold text-center leading-tight px-3">{d.label}</span>
       <Handle type="source" position={Position.Right} className="!bg-emerald-400 !border-emerald-600 !w-2.5 !h-2.5" />
       <Handle type="target" position={Position.Left} className="!bg-emerald-400 !border-emerald-600 !w-2.5 !h-2.5" />
+      <Handle type="source" position={Position.Left} id="left" className="!bg-emerald-400 !border-emerald-600 !w-2.5 !h-2.5" />
+      <Handle type="target" position={Position.Right} id="rightTarget" className="!bg-emerald-400 !border-emerald-600 !w-2.5 !h-2.5" />
       <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-emerald-400 !border-emerald-600 !w-2.5 !h-2.5" />
       <Handle type="target" position={Position.Top} id="top" className="!bg-emerald-400 !border-emerald-600 !w-2.5 !h-2.5" />
     </div>
