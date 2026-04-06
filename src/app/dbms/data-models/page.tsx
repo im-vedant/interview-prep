@@ -878,6 +878,11 @@ export default function DataModels() {
                         In the Loan example — <span className="text-amber-300">Loan has total participation</span> (every loan must belong to someone) and{" "}
                         <span className="text-sky-300">Customer has partial participation</span> (not every customer needs a loan).
                       </div>
+
+                      <div className="bg-muted/50 border-l-4 border-amber-500/50 rounded-md px-4 py-2.5 text-xs text-foreground/70 space-y-1">
+                        <p><span className="text-amber-400 font-semibold">Key fact: </span>A <strong>weak entity always has total participation</strong>{" "}in its identifying relationship — it must always be linked to its parent strong entity.</p>
+                        <p>The <strong>parent side is usually partial</strong> — the parent can exist before any weak entities are created under it.</p>
+                      </div>
                     </div>
 
                   </div>
