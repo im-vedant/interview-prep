@@ -16,6 +16,11 @@ const articles = [
     title: "ER Diagrams to Relational Model",
     desc: "How to design an ER diagram step by step, and map it to relational tables — entities, relationships, weak entities, M:N, specialization.",
   },
+  {
+    slug: "/dbms/relational-model",
+    title: "Relational Model & Normalization",
+    desc: "Relation structure, all types of keys — super, candidate, primary, foreign, composite, surrogate, partial — and normalization up to BCNF.",
+  },
 ];
 
 export default function DBMSIndex() {
