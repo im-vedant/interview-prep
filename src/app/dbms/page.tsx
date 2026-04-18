@@ -21,6 +21,11 @@ const articles = [
     title: "Relational Model & Normalization",
     desc: "Relation structure, all types of keys — super, candidate, primary, foreign, composite, surrogate, partial — and normalization up to BCNF.",
   },
+  {
+    slug: "/dbms/sql-part-1",
+    title: "SQL — Part 1",
+    desc: "DDL/DML/DQL/DCL/TCL, types of operators, aggregate functions (COUNT/SUM/AVG/MAX/MIN) with GROUP BY & HAVING, SQL clauses, and the four JOINs.",
+  },
 ];
 
 export default function DBMSIndex() {
