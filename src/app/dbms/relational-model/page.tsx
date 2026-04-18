@@ -3,10 +3,15 @@ const sections = [
   { id: "key-summary",   label: "Keys — Quick Reference" },
   { id: "normalization", label: "Normalization" },
   { id: "func-deps",     label: "Functional Dependencies" },
+  { id: "armstrong",     label: "Armstrong's Axioms" },
   { id: "1nf",           label: "First Normal Form" },
   { id: "2nf",           label: "Second Normal Form" },
   { id: "3nf",           label: "Third Normal Form" },
   { id: "bcnf",          label: "BCNF" },
+  { id: "closure",       label: "Attribute Closure" },
+  { id: "lossless",      label: "Lossless & Lossy" },
+  { id: "dep-preserve",  label: "Dependency Preservation" },
+  { id: "denorm",        label: "Denormalization" },
 ];
 
 /* Running example used throughout the Keys section */
@@ -370,6 +375,139 @@ export default function RelationalModel() {
               </div>
             </section>
 
+            {/* ── Armstrong's Axioms ────────────────────────────────── */}
+            <section id="armstrong">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                Armstrong&apos;s Axioms
+              </h2>
+              <p className="mb-6 text-sm">
+                Armstrong&apos;s Axioms are a <strong>complete and sound</strong>{" "}set of rules for deriving all valid functional dependencies from a given set of FDs.
+                &ldquo;Sound&rdquo; means every FD derived is genuinely valid. &ldquo;Complete&rdquo; means every valid FD can be derived using these rules.
+                There are <strong>3 primary axioms</strong> and <strong>3 derived rules</strong> built from them.
+              </p>
+
+              {/* Primary axioms */}
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Primary Axioms</p>
+              <div className="space-y-3 mb-8">
+
+                {/* Reflexivity */}
+                <div className="border border-border rounded-lg overflow-hidden text-sm">
+                  <div className="px-5 py-2.5 bg-muted/30 border-b border-border flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-violet-500/20 text-violet-400 text-xs font-bold flex items-center justify-center">1</span>
+                      <p className="font-semibold text-foreground">Reflexivity</p>
+                    </div>
+                    <span className="font-mono text-xs text-violet-300">If Y ⊆ X, then X → Y</span>
+                  </div>
+                  <div className="px-5 py-3.5 space-y-2">
+                    <p className="text-foreground/80 text-sm">
+                      A set of attributes always determines any of its own subsets. These are called <strong>trivial FDs</strong> — they are always true by definition.
+                    </p>
+                    <div className="bg-muted/40 border border-border rounded-lg p-3 font-mono text-xs space-y-1.5">
+                      <p className="text-muted-foreground text-[10px] uppercase tracking-wide mb-1">Using STUDENT(student_id, name, email, phone, dept_id)</p>
+                      <p><span className="text-violet-300">{"{"}student_id, name{"}"}</span> → <span className="text-violet-300">{"{"}name{"}"}</span> <span className="text-muted-foreground ml-2">name is a subset of {"{"}student_id, name{"}"}</span></p>
+                      <p><span className="text-violet-300">{"{"}student_id, email, phone{"}"}</span> → <span className="text-violet-300">{"{"}email{"}"}</span></p>
+                      <p><span className="text-violet-300">{"{"}student_id{"}"}</span> → <span className="text-violet-300">{"{"}student_id{"}"}</span> <span className="text-muted-foreground ml-2">a set determines itself</span></p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Augmentation */}
+                <div className="border border-border rounded-lg overflow-hidden text-sm">
+                  <div className="px-5 py-2.5 bg-muted/30 border-b border-border flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sky-500/20 text-sky-400 text-xs font-bold flex items-center justify-center">2</span>
+                      <p className="font-semibold text-foreground">Augmentation</p>
+                    </div>
+                    <span className="font-mono text-xs text-sky-300">If X → Y, then XZ → YZ</span>
+                  </div>
+                  <div className="px-5 py-3.5 space-y-2">
+                    <p className="text-foreground/80 text-sm">
+                      Adding the same attributes to both sides of a valid FD keeps it valid. If X determines Y, then X together with Z still determines Y together with Z.
+                    </p>
+                    <div className="bg-muted/40 border border-border rounded-lg p-3 font-mono text-xs space-y-1.5">
+                      <p className="text-muted-foreground text-[10px] uppercase tracking-wide mb-1">Starting from: student_id → name</p>
+                      <p>
+                        <span className="text-sky-300">student_id</span> → <span className="text-sky-300">name</span>
+                        <span className="text-muted-foreground mx-2">⟹ augment both sides with dept_id</span>
+                      </p>
+                      <p>
+                        <span className="text-sky-300">(student_id, dept_id)</span> → <span className="text-sky-300">(name, dept_id)</span>
+                      </p>
+                      <p className="text-muted-foreground text-[10px] mt-1">Adding dept_id to both sides — still valid. Knowing (student_id + dept_id) still tells you (name + dept_id).</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Transitivity */}
+                <div className="border border-border rounded-lg overflow-hidden text-sm">
+                  <div className="px-5 py-2.5 bg-muted/30 border-b border-border flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center">3</span>
+                      <p className="font-semibold text-foreground">Transitivity</p>
+                    </div>
+                    <span className="font-mono text-xs text-emerald-300">If X → Y and Y → Z, then X → Z</span>
+                  </div>
+                  <div className="px-5 py-3.5 space-y-2">
+                    <p className="text-foreground/80 text-sm">
+                      If X determines Y and Y determines Z, then X indirectly determines Z. This is the basis of <strong>transitive dependencies</strong> — the one that 3NF eliminates.
+                    </p>
+                    <div className="bg-muted/40 border border-border rounded-lg p-3 font-mono text-xs space-y-1.5">
+                      <p><span className="text-emerald-300">student_id</span> → <span className="text-emerald-300">dept_id</span> <span className="text-muted-foreground ml-2">(a student belongs to one dept)</span></p>
+                      <p><span className="text-emerald-300">dept_id</span> → <span className="text-emerald-300">dept_name</span> <span className="text-muted-foreground ml-2">(a dept has one name)</span></p>
+                      <div className="border-t border-border/50 pt-1.5 mt-1.5">
+                        <p><span className="text-emerald-400">∴ student_id</span> → <span className="text-emerald-400">dept_name</span> <span className="text-muted-foreground ml-2">(by transitivity — the 3NF violation!)</span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Derived rules */}
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Derived Rules (built from the 3 axioms above)</p>
+              <div className="grid grid-cols-3 gap-3 text-xs">
+                {[
+                  {
+                    num: "4", name: "Union", color: "text-amber-400 bg-amber-500/10 border-amber-500/30",
+                    rule: "X → Y and X → Z  ⟹  X → YZ",
+                    desc: "If the same X determines Y and Z separately, it determines them together.",
+                    eg: "student_id → name\nstudent_id → email\n∴ student_id → (name, email)",
+                  },
+                  {
+                    num: "5", name: "Decomposition", color: "text-rose-400 bg-rose-500/10 border-rose-500/30",
+                    rule: "X → YZ  ⟹  X → Y and X → Z",
+                    desc: "If X determines a combined set, it determines each part individually.",
+                    eg: "student_id → (name, email)\n∴ student_id → name\n∴ student_id → email",
+                  },
+                  {
+                    num: "6", name: "Pseudo-transitivity", color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+                    rule: "X → Y and WY → Z  ⟹  WX → Z",
+                    desc: "A generalisation of transitivity — W helps bridge the gap.",
+                    eg: "student_id → dept_id\n(dept_id, city) → hod\n∴ (student_id, city) → hod",
+                  },
+                ].map(({ num, name, color, rule, desc, eg }) => (
+                  <div key={num} className={`border rounded-lg overflow-hidden ${color.split(" ")[2]}`}>
+                    <div className={`px-4 py-2.5 border-b border-border ${color.split(" ")[1]} flex items-center gap-2`}>
+                      <span className={`w-5 h-5 rounded-full border ${color.split(" ")[2]} text-[10px] font-bold flex items-center justify-center flex-shrink-0 ${color.split(" ")[0]}`}>{num}</span>
+                      <p className={`font-semibold ${color.split(" ")[0]}`}>{name}</p>
+                    </div>
+                    <div className="px-4 py-3 space-y-2">
+                      <p className="font-mono text-[10px] text-foreground/70 leading-4">{rule}</p>
+                      <p className="text-muted-foreground leading-4">{desc}</p>
+                      <pre className="bg-[oklch(0.13_0.004_260)] border border-border rounded px-2 py-1.5 text-[10px] text-emerald-300/80 font-mono leading-4 overflow-x-auto whitespace-pre">{eg}</pre>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 bg-muted/50 border-l-4 border-amber-500/50 rounded-md px-5 py-3 text-sm text-foreground/80">
+                <strong>Why it matters:</strong>{" "}Armstrong&apos;s Axioms let you find the <em>closure</em> of a set of attributes — all attributes that can be determined from a given set.
+                The closure of student_id = {"{"}student_id, name, email, phone, dept_id, dept_name{"}"}.
+                This is exactly how you find candidate keys and verify normal forms.
+              </div>
+            </section>
+
             {/* ── 1NF ───────────────────────────────────────────────── */}
             <section id="1nf">
               <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
@@ -529,7 +667,7 @@ export default function RelationalModel() {
               <div className="grid grid-cols-2 gap-3 text-xs mb-5">
                 {[
                   { name: "INSTRUCTOR_COURSE", pk: "instructor PK", cols: ["course_id"], color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/5" },
-                  { name: "STUDENT_INSTRUCTOR", pk: "student_id PK", cols: ["instructor FK"], color: "text-violet-400 border-violet-500/30 bg-violet-500/5" },
+                  { name: "STUDENT_INSTRUCTOR", pk: "(student_id, instructor) PK", cols: [], color: "text-violet-400 border-violet-500/30 bg-violet-500/5" },
                 ].map(({ name, pk, cols, color }) => (
                   <div key={name} className={`border rounded-lg overflow-hidden ${color.split(" ")[1]} ${color.split(" ")[2]}`}>
                     <div className={`px-4 py-2 border-b border-border font-mono font-semibold ${color.split(" ")[0]} text-[11px]`}>{name}</div>
@@ -567,6 +705,261 @@ export default function RelationalModel() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </section>
+
+            {/* ── Attribute Closure ─────────────────────────────────── */}
+            <section id="closure">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                Attribute Closure
+              </h2>
+              <p className="mb-4">
+                The <strong>closure of a set of attributes X</strong> (written <span className="font-mono text-violet-300">X⁺</span>) is the set of <em>all</em>{" "} attributes that can be determined from X using the given FDs.
+                It is computed by repeatedly applying Armstrong&apos;s axioms until no new attributes can be added.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-sm mb-5">
+                <div className="space-y-3 text-xs">
+                  <p className="text-muted-foreground font-medium">Algorithm</p>
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    {[
+                      { step: "1", text: "Start: result = X (the input attributes)" },
+                      { step: "2", text: "For every FD A → B in F: if A ⊆ result, add B to result" },
+                      { step: "3", text: "Repeat step 2 until result stops changing" },
+                      { step: "4", text: "result is X⁺" },
+                    ].map(({ step, text }) => (
+                      <div key={step} className="flex gap-3 px-4 py-2.5 border-b border-border/50 last:border-0">
+                        <span className="flex-shrink-0 w-5 h-5 rounded-full bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center">{step}</span>
+                        <span className="text-foreground/70 leading-5">{text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-3 text-xs">
+                  <p className="text-muted-foreground font-medium">Uses of closure</p>
+                  <div className="space-y-2">
+                    {[
+                      { use: "Find candidate keys", desc: "X is a candidate key if X⁺ = all attributes AND no proper subset of X has the same closure." },
+                      { use: "Check if FD holds",   desc: "X → Y holds under F if Y ⊆ X⁺." },
+                      { use: "Verify BCNF/3NF",     desc: "X is a super key if X⁺ = all attributes." },
+                    ].map(({ use, desc }) => (
+                      <div key={use} className="border border-border rounded-lg p-3 bg-muted/20">
+                        <p className="text-violet-400 font-semibold mb-1">{use}</p>
+                        <p className="text-muted-foreground leading-4">{desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Worked example */}
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Worked example</p>
+              <div className="border border-border rounded-lg p-4 text-xs space-y-3">
+                <div className="font-mono space-y-1 text-[11px]">
+                  <p className="text-muted-foreground">Relation: STUDENT(student_id, name, email, dept_id, dept_name)</p>
+                  <p className="text-muted-foreground">FDs: F = &#123; student_id → name, email, dept_id &nbsp;|&nbsp; dept_id → dept_name &#125;</p>
+                  <p className="text-violet-300 mt-2">Find: {"{"}student_id{"}"}⁺</p>
+                </div>
+                <div className="space-y-1.5 font-mono text-[11px]">
+                  {[
+                    { step: "Start",   result: "{student_id}",                              reason: "" },
+                    { step: "Apply student_id → name, email, dept_id", result: "{student_id, name, email, dept_id}", reason: "student_id ⊆ result" },
+                    { step: "Apply dept_id → dept_name", result: "{student_id, name, email, dept_id, dept_name}",  reason: "dept_id ⊆ result" },
+                    { step: "No more FDs apply — done", result: "", reason: "" },
+                  ].map(({ step, result, reason }, i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <span className="text-muted-foreground/60 w-48 flex-shrink-0">{step}</span>
+                      {result && <span className="text-emerald-300">{result}</span>}
+                      {reason && <span className="text-muted-foreground/50">← {reason}</span>}
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t border-border/50 pt-3 font-mono text-[11px]">
+                  <p><span className="text-violet-300">{"{"}student_id{"}"}⁺</span> = <span className="text-emerald-300">{"{"}student_id, name, email, dept_id, dept_name{"}"}</span> = all attributes</p>
+                  <p className="text-amber-400 mt-1">∴ student_id is a super key (and a candidate key — no subset has the same closure).</p>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Lossless & Lossy ──────────────────────────────────── */}
+            <section id="lossless">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                Lossless & Lossy Decomposition
+              </h2>
+              <p className="mb-5">
+                Every time we normalize, we decompose a relation into smaller ones. A <strong>lossless decomposition</strong> means you can reconstruct the original relation exactly by joining the pieces back.
+                A <strong>lossy decomposition</strong> produces <em>spurious tuples</em> — extra rows that weren&apos;t in the original — making it impossible to recover the original data.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-sm mb-5">
+                <div className="border border-emerald-500/30 rounded-lg overflow-hidden">
+                  <div className="px-5 py-2.5 bg-emerald-500/10 border-b border-border">
+                    <p className="font-semibold text-emerald-400">Lossless Decomposition ✓</p>
+                  </div>
+                  <div className="px-5 py-4 text-xs space-y-2">
+                    <p className="text-foreground/80 leading-5">
+                      R decomposes into R1 and R2 losslessly if:
+                    </p>
+                    <p className="font-mono text-emerald-300 bg-muted/40 border border-border rounded p-2">
+                      R1 ∩ R2 → R1 &nbsp; OR &nbsp; R1 ∩ R2 → R2
+                    </p>
+                    <p className="text-muted-foreground leading-5">
+                      The common attributes between R1 and R2 must be a super key of at least one of them. This guarantees no spurious tuples appear on natural join.
+                    </p>
+                  </div>
+                </div>
+                <div className="border border-rose-500/30 rounded-lg overflow-hidden">
+                  <div className="px-5 py-2.5 bg-rose-500/10 border-b border-border">
+                    <p className="font-semibold text-rose-400">Lossy Decomposition ✗</p>
+                  </div>
+                  <div className="px-5 py-4 text-xs space-y-2">
+                    <p className="text-foreground/80 leading-5">
+                      The common attributes are NOT a super key of either piece. Joining produces spurious tuples — rows that look valid but were never in the original relation.
+                    </p>
+                    <p className="text-muted-foreground leading-5">
+                      The &ldquo;loss&rdquo; is not missing data — it&apos;s <em>added</em> fake data that corrupts the result.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Example */}
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Example — checking our 2NF decomposition</p>
+              <div className="border border-border rounded-lg p-4 text-xs space-y-4">
+                <div>
+                  <p className="text-muted-foreground mb-2">We split STUDENT_COURSE into STUDENT and COURSE via ENROLLMENT. Check STUDENT ∩ ENROLLMENT:</p>
+                  <div className="font-mono space-y-1 text-[11px]">
+                    <p><span className="text-amber-300">STUDENT</span>    = (student_id, name, dept_id)</p>
+                    <p><span className="text-violet-300">ENROLLMENT</span> = (student_id, course_id, grade)</p>
+                    <p className="mt-1"><span className="text-sky-300">R1 ∩ R2</span> = {"{"}student_id{"}"}</p>
+                    <p>Does student_id → all of STUDENT? <span className="text-emerald-400">Yes — student_id is STUDENT&apos;s PK ✓</span></p>
+                  </div>
+                </div>
+                <div className="border-t border-border/50 pt-3">
+                  <p className="text-emerald-400 font-semibold mb-1">∴ Lossless decomposition — joining STUDENT ⋈ ENROLLMENT on student_id gives back the original rows exactly.</p>
+                  <p className="text-muted-foreground leading-5">All normalization decompositions we did (2NF, 3NF, BCNF) are lossless because we always split on a key.</p>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Dependency Preservation ───────────────────────────── */}
+            <section id="dep-preserve">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                Dependency Preservation
+              </h2>
+              <p className="mb-4">
+                A decomposition <strong>preserves dependencies</strong> if every FD from the original relation can be checked in one of the decomposed tables — without needing a join.
+                If you have to join tables just to verify a constraint, the system becomes slow and error-prone.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-sm mb-5">
+                <div className="border border-emerald-500/30 rounded-lg p-4 text-xs space-y-2">
+                  <p className="text-emerald-400 font-semibold">3NF — always dependency preserving ✓</p>
+                  <p className="text-foreground/80 leading-5">
+                    3NF decomposition (using the synthesis algorithm) guarantees that all original FDs can be enforced in the decomposed tables.
+                  </p>
+                  <p className="text-muted-foreground leading-5">
+                    Tradeoff: 3NF may leave some redundancy that BCNF would remove.
+                  </p>
+                </div>
+                <div className="border border-amber-500/30 rounded-lg p-4 text-xs space-y-2">
+                  <p className="text-amber-400 font-semibold">BCNF — may NOT preserve dependencies ✗</p>
+                  <p className="text-foreground/80 leading-5">
+                    BCNF gives a cleaner schema (no redundancy) but can lose some FDs in the decomposition.
+                  </p>
+                  <p className="text-muted-foreground leading-5">
+                    Tradeoff: you may need application-level code or triggers to enforce the lost FD.
+                  </p>
+                </div>
+              </div>
+
+              {/* BCNF lost FD example */}
+              <div className="border border-border rounded-lg p-4 text-xs space-y-3">
+                <p className="text-muted-foreground font-medium">Example — the FD lost in our BCNF decomposition</p>
+                <div className="font-mono space-y-1 text-[11px]">
+                  <p>Original: COURSE_TEACH(student_id, course_id, instructor)</p>
+                  <p>FDs: (student_id, course_id) → instructor &nbsp;|&nbsp; instructor → course_id</p>
+                </div>
+                <div className="font-mono space-y-1 text-[11px]">
+                  <p>After BCNF decomposition:</p>
+                  <p><span className="text-emerald-300">INSTRUCTOR_COURSE(instructor, course_id)</span> — preserves instructor → course_id ✓</p>
+                  <p><span className="text-violet-300">STUDENT_INSTRUCTOR(student_id, instructor)</span></p>
+                  <p className="text-rose-400 mt-1">FD (student_id, course_id) → instructor is LOST — can&apos;t be checked without joining both tables ✗</p>
+                </div>
+                <div className="bg-muted/40 border border-amber-500/20 rounded p-3 text-muted-foreground leading-5">
+                  <span className="text-amber-400 font-semibold">The tradeoff: </span>
+                  BCNF gives a redundancy-free schema. 3NF keeps all FDs checkable but may allow some redundancy.
+                  In practice, BCNF is preferred unless dependency preservation is critical.
+                </div>
+              </div>
+            </section>
+
+            {/* ── Denormalization ───────────────────────────────────── */}
+            <section id="denorm">
+              <h2 className="font-heading text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
+                Denormalization
+              </h2>
+              <p className="mb-4">
+                <strong>Denormalization</strong> is the intentional reversal of normalization — merging tables back together to improve <strong>read performance</strong>.
+                Highly normalized databases require many joins, which become slow at scale. Denormalization trades some redundancy for speed.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-sm mb-5">
+                <div className="space-y-3 text-xs">
+                  <p className="text-muted-foreground font-medium">When to denormalize</p>
+                  <div className="space-y-2">
+                    {[
+                      { trigger: "Too many joins",         desc: "A query joins 6+ tables on every request — latency becomes unacceptable." },
+                      { trigger: "Read-heavy workload",    desc: "Data is mostly read, rarely updated — redundancy cost is low." },
+                      { trigger: "Reporting / analytics",  desc: "OLAP systems pre-aggregate data instead of computing on-the-fly." },
+                      { trigger: "Caching derived values", desc: "Store computed columns (e.g. order_total) to avoid recalculating." },
+                    ].map(({ trigger, desc }) => (
+                      <div key={trigger} className="flex gap-2 border border-border rounded p-2.5 bg-muted/20">
+                        <span className="flex-shrink-0 text-amber-400 font-semibold">{trigger}:</span>
+                        <span className="text-muted-foreground leading-4">{desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-3 text-xs">
+                  <p className="text-muted-foreground font-medium">Costs of denormalization</p>
+                  <div className="space-y-2">
+                    {[
+                      { cost: "Update anomalies return",  desc: "Same data in multiple places — must keep them in sync manually." },
+                      { cost: "More storage",             desc: "Duplicate data takes more disk space." },
+                      { cost: "Write complexity",         desc: "INSERT/UPDATE/DELETE must update multiple columns or rows." },
+                      { cost: "Risk of inconsistency",    desc: "If one copy is updated and another isn't, data diverges." },
+                    ].map(({ cost, desc }) => (
+                      <div key={cost} className="flex gap-2 border border-rose-500/20 rounded p-2.5 bg-muted/20">
+                        <span className="flex-shrink-0 text-rose-400 font-semibold">{cost}:</span>
+                        <span className="text-muted-foreground leading-4">{desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="border border-border rounded-lg p-4 text-xs space-y-2 mb-5">
+                <p className="text-muted-foreground font-medium">Example — denormalizing for an order summary page</p>
+                <div className="grid grid-cols-2 gap-3 font-mono text-[11px]">
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-[10px] uppercase mb-1">Normalized (3 joins needed)</p>
+                    <p className="text-foreground/60">ORDER(order_id, customer_id, date)</p>
+                    <p className="text-foreground/60">CUSTOMER(customer_id, name, city)</p>
+                    <p className="text-foreground/60">ORDER_ITEM(order_id, product_id, qty)</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-[10px] uppercase mb-1">Denormalized (0 joins)</p>
+                    <p className="text-emerald-300/80">ORDER_SUMMARY(order_id, date,</p>
+                    <p className="text-emerald-300/80 pl-4">customer_name, customer_city,</p>
+                    <p className="text-emerald-300/80 pl-4">item_count, order_total)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-muted/50 border-l-4 border-violet-500/50 rounded-md px-5 py-3 text-sm text-foreground/80">
+                <strong>Rule of thumb:</strong>{" "}always normalize first, then denormalize only where profiling shows a real performance problem.
+                Denormalization is an optimization — not a design starting point.
               </div>
             </section>
 
